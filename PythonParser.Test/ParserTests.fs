@@ -4,13 +4,17 @@ open NUnit.Framework
 open Parser
 open Types
 
+// useful to get python intellisense in vscode via 
+// [this extension](https://marketplace.visualstudio.com/items?itemName=alfonsogarciacaro.vscode-template-fsharp-highlight)
+let python (p: string) = p
+
 [<SetUp>]
 let Setup () =
     ()
 
 [<Test>]
 let ParseSingleArgTests () =
-    let result, _ = parseFunc([|"def func(arg1: string) -> float: ..."|], 0)
+    let result, _ = parseFunc([| python "def func(arg1: string) -> float: ..."|], 0)
     Assert.AreEqual(
         {
             FunctionDef.Name = "func";
@@ -21,7 +25,7 @@ let ParseSingleArgTests () =
 
 [<Test>]
 let ParseComplexType () =
-    let result, _ = parseFunc([|"def handle_starttag(attrs: list[tuple[str, str | None]]) -> None: ..."|], 0)
+    let result, _ = parseFunc([| python "def handle_starttag(attrs: list[tuple[str, str | None]]) -> None: ..."|], 0)
     Assert.AreEqual(
     {
         FunctionDef.Name = "handle_starttag";
@@ -43,10 +47,12 @@ let ParseComplexType () =
 
 [<Test>]
 let ParseMultiLineArgTests () =
-    let source = """def func(arg1: string,
+    let source = 
+        python """
+        def func(arg1: string,
          arg2: int,
          arg3: string) -> float: ...
-"""
+        """
     
     let result, _ = parseFunc(source.Split("\n"), 0)
     Assert.AreEqual(
@@ -61,10 +67,11 @@ let ParseMultiLineArgTests () =
     
 [<Test>]
 let ParseMultiLineArgAsyncTests () =
-    let source = """async def func(arg1: string,
+    let source = 
+        python """async def func(arg1: string,
          arg2: int,
          arg3: string) -> float: ...
-"""
+        """
     
     let result, _ = parseFunc(source.Split("\n"), 0)
     Assert.AreEqual(
